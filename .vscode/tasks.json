@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: g++.exe build active file",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "if (!(Test-Path '${workspaceFolder}\\build')) { New-Item -ItemType Directory -Path '${workspaceFolder}\\build' }; H:\\compiler\\mingw64\\bin\\g++.exe -fdiagnostics-color=always -g '${file}' -o '${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe'"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Kompilacja g++ z MinGW na dysku H"
+        }
+    ]
+}
