@@ -6,6 +6,7 @@
 #include <iostream>
 #include <windows.h>
 #include "UI.hpp"
+#include <fstream>
 
 // Typ funkcji obsługującej komendę wewnątrz terminala
 using CommandHandler = std::function<void(const std::vector<std::string>& args)>;
