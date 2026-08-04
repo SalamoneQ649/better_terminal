@@ -19,8 +19,8 @@ namespace UI {
  | __ <|  _|   | |   | | |  _| | |_| |     | | |  _| | |_| | | |  
  |____/|_____| |_|   |_| |_____|_| |_|     |_| |_____|_| |_| |_|  
         )" << RESET << "\n";
-        std::cout << GREEN << " [ BetterTerminal v1.0.0 | ESP32 & Modular CLI Environment ]\n" << RESET;
-        std::cout << YELLOW << " Wpisz 'help', aby wyswietlic liste komend.\n\n" << RESET;
+        std::cout << GREEN << " [ BetterTerminal v0.0.1]\n" << RESET;
+        std::cout << YELLOW << " /help.\n\n" << RESET;
     }
 
     inline void printPrompt(const std::string& currentPath = "bt") {
