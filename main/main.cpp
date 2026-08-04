@@ -6,7 +6,7 @@
 #include "../include/CommandManager.hpp"
 
 int main() {
-    // Włączenie obsługi kolorów ANSI w konsoli Windowsa
+
     system("");
     CommandManager cmdManager;
 
@@ -21,7 +21,6 @@ int main() {
 
         if (input.empty()) continue;
 
-        // Parsowanie tekstu na komendę i argumenty
         std::stringstream ss(input);
         std::string cmdName;
         ss >> cmdName;
