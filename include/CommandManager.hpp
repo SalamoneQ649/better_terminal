@@ -4,22 +4,33 @@
 #include <map>
 #include <functional>
 #include <iostream>
-#include <string>
+#include <windows.h>
 #include "UI.hpp"
 
-// Typ funkcji obsługującej komendę
+// Typ funkcji obsługującej komendę wewnątrz terminala
 using CommandHandler = std::function<void(const std::vector<std::string>& args)>;
+
+// Typ eksportowanej funkcji z pliku DLL: extern "C" __declspec(dllexport) void execute(const std::vector<std::string>&)
+typedef void (*PluginExecuteFunc)(const std::vector<std::string>&);
 
 class CommandManager {
 private:
     std::map<std::string, CommandHandler> commands;
+    std::vector<HMODULE> loadedPlugins; // Przechowuje uchwyty do załadowanych DLL
 
 public:
     CommandManager() {
         registerBuiltins();
     }
 
-    // Dodawanie pojedynczej komendy
+    ~CommandManager() {
+        // Zwalnianie pamięci po załadowanych DLL przy zamykaniu terminala
+        for (HMODULE hModule : loadedPlugins) {
+            if (hModule) FreeLibrary(hModule);
+        }
+    }
+
+    // Dodawanie pojedynczej komendy (szablon obsługuje zarówno lambdy, jak i wskaźniki na funkcje)
     template <typename T>
     void registerCommand(const std::string& name, T handler) {
         commands[name] = CommandHandler(handler);
@@ -32,13 +43,30 @@ public:
         registerCommand(second, handler);
     }
 
-    void registerCommand(const std::string& name, CommandHandler handler) {
-        commands[name] = handler;
-    }
+    // Dynamiczne ładowanie wtyczki z pliku .dll
+    bool loadPlugin(const std::string& commandName, const std::string& dllPath) {
+        // 1. Otwarcie pliku DLL w pamięci
+        HMODULE hModule = LoadLibraryA(dllPath.c_str());
+        if (!hModule) {
+            std::cout << UI::RED << "[BT Error] Nie udalo sie zaladowac pliku: " << dllPath << UI::RESET << "\n";
+            return false;
+        }
 
-    void registerCommand(const std::string& first, const std::string& second, CommandHandler handler) {
-        registerCommand(first, handler);
-        registerCommand(second, handler);
+        // 2. Pobranie adresu funkcji "execute" z pliku DLL
+        PluginExecuteFunc pluginFunc = (PluginExecuteFunc)GetProcAddress(hModule, "execute");
+        if (!pluginFunc) {
+            std::cout << UI::RED << "[BT Error] Nie znaleziono punktu wejscia 'execute' w " << dllPath << UI::RESET << "\n";
+            FreeLibrary(hModule);
+            return false;
+        }
+
+        // 3. Rejestracja funkcji z DLL jako komendy w terminalu
+        registerCommand(commandName, [pluginFunc](const std::vector<std::string>& args) {
+            pluginFunc(args);
+        });
+
+        loadedPlugins.push_back(hModule);
+        return true;
     }
 
     bool execute(const std::string& name, const std::vector<std::string>& args) {
@@ -59,16 +87,28 @@ private:
             }
         });
 
-        registerCommand("clear","cls", [](const std::vector<std::string>& args) {
+        registerCommand("clear", "cls", [](const std::vector<std::string>& args) {
             std::cout << "\033[2J\033[1;1H";
         });
-        registerCommand("install", [](const std::vector<std::string>& args) {
+
+        registerCommand("install", [this](const std::vector<std::string>& args) {
             if (args.empty()) {
                 std::cout << UI::RED << "Brak nazwy pakietu! Uzycie: install <nazwa_pakietu>\n" << UI::RESET;
                 return;
             }
-            std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
+
+            std::string pluginName = args[0];
+            std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << pluginName << "' z Twojej domeny...\n" << UI::RESET;
+
+            // Tutaj docelowo znajdzie się kod pobierający .dll z sieci do folderu ./plugins/
+            std::string dllPath = "plugins/" + pluginName + ".dll";
+
+            // Próba automatycznego załadowania po pobraniu
+            if (loadPlugin(pluginName, dllPath)) {
+                std::cout << UI::GREEN << "[BT] Pomyslnie zainstalowano i zaladowano komende: " << pluginName << UI::RESET << "\n";
+            }
         });
+
         registerCommand("exit", "quit", [](const std::vector<std::string>& args) {
             std::string choice;
             std::cout << "Are you sure? (Y/N): ";
@@ -76,8 +116,7 @@ private:
             if (choice == "Y" || choice == "y") {
                 std::cout << "Exiting...\n";
                 exit(0);
-        }
-        
+            }
         });
     }
 };
