@@ -11,18 +11,6 @@ namespace UI {
     const std::string BLUE    = "\033[1;34m";
     const std::string CYAN    = "\033[1;36m";
     const std::string BOLD    = "\033[1m";
-
-    inline void printBanner() {
-        std::cout << CYAN << R"(
-  ____  _____ _____ _____ _____ _____     _____ _____ _____ _____ 
- | __ \| ____|_   _|_   _| ____|  _  |   |_   _| ____|  _  |_   _|
- | __ <|  _|   | |   | | |  _| | |_| |     | | |  _| | |_| | | |  
- |____/|_____| |_|   |_| |_____|_| |_|     |_| |_____|_| |_| |_|  
-        )" << RESET << "\n";
-        std::cout << GREEN << " [ BetterTerminal v0.0.1]\n" << RESET;
-        std::cout << YELLOW << " /help.\n\n" << RESET;
-    }
-
     inline void printPrompt(const std::string& currentPath = "bt") {
         std::cout << GREEN << "bt-user@" << CYAN << currentPath << RESET << GREEN << " > " << RESET;
     }
