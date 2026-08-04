@@ -50,6 +50,6 @@ private:
             }
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
         });
-        registerCommand
+        registerCommand("")
     }
 };
