@@ -42,10 +42,8 @@ private:
 
         // Wbudowana komenda: clear
         registerCommand("clear", [](const std::vector<std::string>& args) {
-            std::cout << "\033[2J\033[1;1H"; // Kod ANSI czyszczący ekran
+            std::cout << "\033[2J\033[1;1H";
         });
-
-        // Szkielet pod Twoją komendę pobierania modułów
         registerCommand("install", [](const std::vector<std::string>& args) {
             if (args.empty()) {
                 std::cout << UI::RED << "Brak nazwy pakietu! Uzycie: install <nazwa_pakietu>\n" << UI::RESET;
