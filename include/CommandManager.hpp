@@ -127,8 +127,8 @@ private:
                 exit(0);
             }
         });
-        registerCommand("exit", "quit", [](const std::vector<std::string>& args){
-
+        registerCommand("dllib", [](const std::vector<std::string>& args){
+            
         });
     }
 };
