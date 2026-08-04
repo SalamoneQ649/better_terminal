@@ -10,7 +10,7 @@
 // Typ funkcji obsługującej komendę wewnątrz terminala
 using CommandHandler = std::function<void(const std::vector<std::string>& args)>;
 
-// Typ eksportowanej funkcji z pliku DLL: extern "C" __declspec(dllexport) void execute(const std::vector<std::string>&)
+// Typ eksportowanej funkcji z pliku DLL (styl C)
 typedef void (*PluginExecuteFunc)(int, const char**);
 
 class CommandManager {
@@ -30,7 +30,7 @@ public:
         }
     }
 
-    // Dodawanie pojedynczej komendy (szablon obsługuje zarówno lambdy, jak i wskaźniki na funkcje)
+    // Dodawanie pojedynczej komendy
     template <typename T>
     void registerCommand(const std::string& name, T handler) {
         commands[name] = CommandHandler(handler);
@@ -60,9 +60,14 @@ public:
             return false;
         }
 
-        // 3. Rejestracja funkcji z DLL jako komendy w terminalu
+        // 3. Rejestracja funkcji z DLL i konwersja argumentów na format C (int, const char**)
         registerCommand(commandName, [pluginFunc](const std::vector<std::string>& args) {
-            pluginFunc(args);
+            std::vector<const char*> c_args;
+            for (const auto& arg : args) {
+                c_args.push_back(arg.c_str());
+            }
+
+            pluginFunc(static_cast<int>(c_args.size()), c_args.data());
         });
 
         loadedPlugins.push_back(hModule);
@@ -100,8 +105,7 @@ private:
             std::string pluginName = args[0];
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << pluginName << "' z Twojej domeny...\n" << UI::RESET;
 
-            // Tutaj docelowo znajdzie się kod pobierający .dll z sieci do folderu ./plugins/
-            std::string dllPath = "../plugins/" + pluginName + ".dll";;
+            std::string dllPath = "../plugins/" + pluginName + ".dll";
 
             // Próba automatycznego załadowania po pobraniu
             if (loadPlugin(pluginName, dllPath)) {
