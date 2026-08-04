@@ -50,8 +50,8 @@ private:
             }
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
         });
-        registerCommand("exit","quit", [](const std::vector<std::string>& args)){
-            
-        }
+        registerCommand("exit","quit", [](const std::vector<std::string>& args){
+            if()
+        });
     }
 };
