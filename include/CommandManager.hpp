@@ -5,8 +5,10 @@
 #include <functional>
 #include <iostream>
 #include <windows.h>
+#include <filesystem>
 #include "UI.hpp"
-#include <fstream>
+
+namespace fs = std::filesystem;
 
 // Typ funkcji obsługującej komendę wewnątrz terminala
 using CommandHandler = std::function<void(const std::vector<std::string>& args)>;
@@ -22,12 +24,36 @@ private:
 public:
     CommandManager() {
         registerBuiltins();
+        loadAllPluginsFromFolder("../plugins/"); // Automatyczne ładowanie przy starcie
     }
 
     ~CommandManager() {
         // Zwalnianie pamięci po załadowanych DLL przy zamykaniu terminala
         for (HMODULE hModule : loadedPlugins) {
             if (hModule) FreeLibrary(hModule);
+        }
+    }
+
+    // Automatyczne skanowanie katalogu z wtyczkami
+    void loadAllPluginsFromFolder(const std::string& folderPath) {
+        if (!fs::exists(folderPath)) {
+            fs::create_directories(folderPath);
+            return;
+        }
+
+        for (const auto& entry : fs::directory_iterator(folderPath)) {
+            if (entry.is_regular_file() && entry.path().extension() == ".dll") {
+                std::string commandName = entry.path().stem().string(); // Nazwa pliku bez .dll
+                std::string dllPath = entry.path().string();
+
+                // Sprawdzamy czy komenda już istnieje, żeby nie ładować dubli
+                if (commands.find(commandName) == commands.end()) {
+                    if (loadPlugin(commandName, dllPath)) {
+                        std::cout << UI::GREEN << "[BT System] Automatycznie zaladowano wtyczke: " 
+                                  << commandName << UI::RESET << "\n";
+                    }
+                }
+            }
         }
     }
 
@@ -63,18 +89,18 @@ public:
 
         // 3. Rejestracja funkcji z DLL i konwersja argumentów na format C (int, const char**)
         registerCommand(commandName, [pluginFunc](const std::vector<std::string>& args) {
-    if (!pluginFunc) {
-        std::cout << UI::RED << "[BT Error] Funkcja execute jest nieprawidlowa!" << UI::RESET << "\n";
-        return;
-    }
+            if (!pluginFunc) {
+                std::cout << UI::RED << "[BT Error] Funkcja execute jest nieprawidlowa!" << UI::RESET << "\n";
+                return;
+            }
 
-    std::vector<const char*> c_args;
-    for (const auto& arg : args) {
-        c_args.push_back(arg.c_str());
-    }
+            std::vector<const char*> c_args;
+            for (const auto& arg : args) {
+                c_args.push_back(arg.c_str());
+            }
 
-    pluginFunc(static_cast<int>(c_args.size()), c_args.data());
-});
+            pluginFunc(static_cast<int>(c_args.size()), c_args.data());
+        });
 
         loadedPlugins.push_back(hModule);
         return true;
@@ -119,6 +145,12 @@ private:
             }
         });
 
+        // Komenda dllib: ręczne przeskanowanie katalogu wtyczek
+        registerCommand("dllib", [this](const std::vector<std::string>& args) {
+            std::cout << UI::YELLOW << "[BT] Skanowanie folderu ../plugins/ w poszukiwaniu nowych wtyczek...\n" << UI::RESET;
+            loadAllPluginsFromFolder("../plugins/");
+        });
+
         registerCommand("exit", "quit", [](const std::vector<std::string>& args) {
             std::string choice;
             std::cout << "Are you sure? (Y/N): ";
@@ -127,14 +159,6 @@ private:
                 std::cout << "Exiting...\n";
                 exit(0);
             }
-        });
-        registerCommand("dllib", [](const std::vector<std::string>& args){
-            std::scanf(../plugins/)
-            for (itn i = 0; i < count; i++)
-            {
-                /* code */
-            }
-            
         });
     }
 };
