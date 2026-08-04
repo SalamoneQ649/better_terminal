@@ -4,6 +4,7 @@
 #include <map>
 #include <functional>
 #include <iostream>
+#include <string>
 #include "UI.hpp"
 
 // Typ funkcji obsługującej komendę
@@ -51,7 +52,12 @@ private:
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
         });
         registerCommand("exit","quit", [](const std::vector<std::string>& args){
-            if()
+            std::string choice;
+            std::cout << "Are you sure? (Y/N)";
+            std::cin >> choice;
+            if(choice == "Y"){
+                
+            }
         });
     }
 };
