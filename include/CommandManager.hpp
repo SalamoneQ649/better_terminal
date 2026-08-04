@@ -11,7 +11,7 @@
 using CommandHandler = std::function<void(const std::vector<std::string>& args)>;
 
 // Typ eksportowanej funkcji z pliku DLL: extern "C" __declspec(dllexport) void execute(const std::vector<std::string>&)
-typedef void (*PluginExecuteFunc)(const std::vector<std::string>&);
+typedef void (*PluginExecuteFunc)(int, const char**);
 
 class CommandManager {
 private:
