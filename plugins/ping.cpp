@@ -1,19 +1,16 @@
 #include <iostream>
-#include <vector>
-#include <string>
 #include <memory>
 #include <array>
 #include <cstdio>
+#include <string>
 
-// extern "C" zapobiega dekorowaniu nazw funkcji przez kompilator C++ (Name Mangling)
-// __declspec(dllexport) mówi Windowsowi, że ta funkcja jest widoczna na zewnątrz DLL
-extern "C" __declspec(dllexport) void execute(const std::vector<std::string>& args) {
-    if (args.empty()) {
+extern "C" __declspec(dllexport) void execute(int argc, const char** argv) {
+    if (argc < 1) {
         std::cout << "Uzycie: ping <adres_ip_lub_host>\n";
         return;
     }
 
-    std::string host = args[0];
+    std::string host = argv[0];
     std::string command = "ping -n 4 " + host;
 
     std::cout << "[BT Plugin] Pinging " << host << "...\n";
