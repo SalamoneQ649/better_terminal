@@ -101,7 +101,7 @@ private:
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << pluginName << "' z Twojej domeny...\n" << UI::RESET;
 
             // Tutaj docelowo znajdzie się kod pobierający .dll z sieci do folderu ./plugins/
-            std::string dllPath = "plugins/" + pluginName + ".dll";
+            std::string dllPath = "../plugins/" + pluginName + ".dll";;
 
             // Próba automatycznego załadowania po pobraniu
             if (loadPlugin(pluginName, dllPath)) {
