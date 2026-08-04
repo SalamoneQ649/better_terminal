@@ -41,7 +41,7 @@ private:
         });
 
         // Wbudowana komenda: clear
-        registerCommand("clear", [](const std::vector<std::string>& args) {
+        registerCommand("clear","cls", [](const std::vector<std::string>& args) {
             std::cout << "\033[2J\033[1;1H";
         });
         registerCommand("install", [](const std::vector<std::string>& args) {
