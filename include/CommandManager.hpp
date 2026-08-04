@@ -62,13 +62,18 @@ public:
 
         // 3. Rejestracja funkcji z DLL i konwersja argumentów na format C (int, const char**)
         registerCommand(commandName, [pluginFunc](const std::vector<std::string>& args) {
-            std::vector<const char*> c_args;
-            for (const auto& arg : args) {
-                c_args.push_back(arg.c_str());
-            }
+    if (!pluginFunc) {
+        std::cout << UI::RED << "[BT Error] Funkcja execute jest nieprawidlowa!" << UI::RESET << "\n";
+        return;
+    }
 
-            pluginFunc(static_cast<int>(c_args.size()), c_args.data());
-        });
+    std::vector<const char*> c_args;
+    for (const auto& arg : args) {
+        c_args.push_back(arg.c_str());
+    }
+
+    pluginFunc(static_cast<int>(c_args.size()), c_args.data());
+});
 
         loadedPlugins.push_back(hModule);
         return true;
