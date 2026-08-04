@@ -129,6 +129,11 @@ private:
             }
         });
         registerCommand("dllib", [](const std::vector<std::string>& args){
+            std::scanf(../plugins/)
+            for (itn i = 0; i < count; i++)
+            {
+                /* code */
+            }
             
         });
     }
