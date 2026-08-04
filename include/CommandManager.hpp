@@ -40,7 +40,6 @@ private:
             }
         });
 
-        // Wbudowana komenda: clear
         registerCommand("clear","cls", [](const std::vector<std::string>& args) {
             std::cout << "\033[2J\033[1;1H";
         });
@@ -50,7 +49,7 @@ private:
                 return;
             }
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
-            // Tutaj w przyszłości dodasz kod pobierania DLL / plików z domeny
         });
+        
     }
 };
