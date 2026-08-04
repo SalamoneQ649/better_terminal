@@ -19,8 +19,26 @@ public:
         registerBuiltins();
     }
 
+    // Dodawanie pojedynczej komendy
+    template <typename T>
+    void registerCommand(const std::string& name, T handler) {
+        commands[name] = CommandHandler(handler);
+    }
+
+    // Dodawanie komendy z aliasem (np. clear i cls)
+    template <typename T>
+    void registerCommand(const std::string& first, const std::string& second, T handler) {
+        registerCommand(first, handler);
+        registerCommand(second, handler);
+    }
+
     void registerCommand(const std::string& name, CommandHandler handler) {
         commands[name] = handler;
+    }
+
+    void registerCommand(const std::string& first, const std::string& second, CommandHandler handler) {
+        registerCommand(first, handler);
+        registerCommand(second, handler);
     }
 
     bool execute(const std::string& name, const std::vector<std::string>& args) {
@@ -51,13 +69,15 @@ private:
             }
             std::cout << UI::CYAN << "[BT] Pobieranie pakietu '" << args[0] << "' z Twojej domeny...\n" << UI::RESET;
         });
-        registerCommand("exit","quit", [](const std::vector<std::string>& args){
+        registerCommand("exit", "quit", [](const std::vector<std::string>& args) {
             std::string choice;
-            std::cout << "Are you sure? (Y/N)";
+            std::cout << "Are you sure? (Y/N): ";
             std::cin >> choice;
-            if(choice == "Y"){
-                
-            }
+            if (choice == "Y" || choice == "y") {
+                std::cout << "Exiting...\n";
+                exit(0);
+        }
+        
         });
     }
 };

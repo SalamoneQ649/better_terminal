@@ -7,9 +7,7 @@
 
 int main() {
     // Włączenie obsługi kolorów ANSI w konsoli Windowsa
-    system(""); 
-
-    UI::printBanner();
+    system("");
     CommandManager cmdManager;
 
     std::string input;
